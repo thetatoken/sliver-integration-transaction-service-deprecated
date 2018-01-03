@@ -1,0 +1,10 @@
+*.swp
+*.swo
+
+desktop .ini
+
+config.cfg
+
+log
+log/*.*
+
