@@ -1,7 +1,8 @@
 *.swp
 *.swo
 
-desktop .ini
+desktop.ini
+.DS_Store
 
 config.cfg
 
