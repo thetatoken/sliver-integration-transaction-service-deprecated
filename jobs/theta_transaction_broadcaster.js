@@ -20,7 +20,7 @@ var nonce_lock = 0;
 
 
 //------------------------------------------------------------------------------
-//  All the implementation goes below
+//  All implementation goes below
 //------------------------------------------------------------------------------
 exports.Initialize = function(config, web3Node, callback) {
   config.log.service_name = 'theta_transaction_broadcaster';
