@@ -16,7 +16,7 @@ exports.SetConfig = function(cfg) {
 
 // theta transacion
 exports.GetNewThetaTransaction = function(callback) {
-  ProcessHttpRequest(config.private_api_host, config.private_api_port, 'GET', '/v1/theta_xact/list?status=created&number=1000', '', callback);
+  ProcessHttpRequest(config.private_api_host, config.private_api_port, 'GET', '/v1/theta_xact/list?type=gift&type=withdraw&type=gas&status=created&number=1000', '', callback);
 }
 
 exports.GetProcessingThetaTransaction = function(callback) {
@@ -38,6 +38,11 @@ exports.GetAddressByUserId = function(userId, callback) {
 exports.GetSignedThetaTransactionData = function(fromId, toId, value, nonce, gasPrice, startGas, tokenType, callback) {
   params = '?from=' + fromId + '&to=' + toId + '&nonce=' + nonce + '&gas_price=' + gasPrice + '&start_gas=' + startGas + '&value=' + value + '&token_type=' + tokenType;
   ProcessHttpRequest(config.key_service_api_host, config.key_service_api_port, 'GET', '/transaction/sign' + params, '', callback);
+}
+
+// theta deposit
+exports.GetProcessingThetaDeposit = function(callback) {
+  ProcessHttpRequest(config.private_api_host, config.private_api_port, 'GET', '/v1/theta_deposit/list?type=depositstatus=processing&number=1000', '', callback);
 }
 
 // whitelist service
