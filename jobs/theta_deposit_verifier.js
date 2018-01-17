@@ -65,7 +65,7 @@ exports.Execute = function(callback) {
       var tx_receipt = web3.eth.getTransactionReceipt(xact_hash);
       var tx_detail = web3.eth.getTransaction(xact_hash)
       if (tx_receipt == null || tx_detail == null) {
-        if ((Date.now - xact_timestamp) / 1000 < timestamp_cutoff) {
+        if ((Date.now() - xact_timestamp) / 1000 < timestamp_cutoff) {
           log.Info('Deposit with ' + xact_hash + ' has not receipt yet. Will retry later');
           throw null;
         } else {
