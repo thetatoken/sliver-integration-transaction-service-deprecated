@@ -11,6 +11,7 @@ var blocksNeeded = 5; // will be overwritten by config
 var lock = false;
 var timestamp_cutoff = 900; // seconds
 var token_contract_address = null;
+var token_deposit_to_address = null;
 var token_transfer_method_id = null;
 var twenty_four_0s = "000000000000000000000000";
 
@@ -23,6 +24,7 @@ exports.Initialize = function(config, web3Node, callback) {
   web3 = web3Node;
   blocksNeeded = config.blocks_to_confirm;
   token_contract_address = config.theta_token_contract_address;
+  token_deposit_to_address = config.theta_token_deposit_to_address;
   token_transfer_method_id = config.theta_token_transfer_method_id;
 }
 
@@ -74,12 +76,13 @@ exports.Execute = function(callback) {
           return api.UpdateThetaTransactionAsync(xact_id, JSON.stringify(payload));
         }
       } else { // tx_receipt and tx_detail are both fetched
-        raw_user_wallet_address = user_wallet_address.startsWith("0x") ? user_wallet_address.substr(2) : user_wallet_address;
+        raw_token_deposit_to_address = token_deposit_to_address.startsWith("0x") ? token_deposit_to_address.substr(2) : token_deposit_to_address;
+
         if (tx_receipt.status == '0x1' 
-          && tx_detail.from.toLowerCase() == user_wallet_address.toLowerCase() 
-          && tx_detail.to.toLowerCase() == token_contract_address.toLowerCase()
+          && tx_detail.from.toLowerCase() == user_wallet_address.toLowerCase() // from user
+          && tx_detail.to.toLowerCase() == token_contract_address.toLowerCase() // to smart contract
           && tx_detail.input.length == token_transfer_method_id.length + 64 + 64
-          && tx_detail.input.startsWith(token_transfer_method_id + twenty_four_0s + raw_user_wallet_address)) {
+          && tx_detail.input.startsWith(token_transfer_method_id + twenty_four_0s + raw_token_deposit_to_address)) { // deposit to address in config
 
           hex_amount_str = tx_detail.input.substr(token_transfer_method_id.length + 64);
           decimal_amount_str = web3.toDecimal(hex_amount_str);
@@ -104,9 +107,16 @@ exports.Execute = function(callback) {
   })
   .then(function(updateTransactionResult) {
     var result = JSON.parse(updateTransactionResult);
-    if (result.status != 'SUCCESS') {
+    if (result.status == 'SUCCESS') {
+      log.Info('Transaction updated .');
+      log.Info('===================================================');
+      if (lockOwner) {
+        lock = false;
+      }
+    } else {
       throw Error('Failed to update transaction status to backend');
     }
+
   })
   .catch(function(error) {
     if (error != null) {
