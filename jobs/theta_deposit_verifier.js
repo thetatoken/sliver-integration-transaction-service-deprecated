@@ -66,10 +66,11 @@ exports.Execute = function(callback) {
       var tx_detail = web3.eth.getTransaction(xact_hash)
       if (tx_receipt == null || tx_detail == null) {
         if ((Date.now() - xact_timestamp) / 1000 < timestamp_cutoff) {
-          log.Info('Deposit with ' + xact_hash + ' has not receipt yet. Will retry later');
+          log.Info('Deposit with ' + xact_hash + ' has no receipt yet. Will retry later');
+          log.Info('===================================================');
           throw null;
         } else {
-          log.Info('Failed to get transaction receipt from blockchain within ttl');
+          log.Info('Failed to get transaction receipt from blockchain within ' + timestamp_cutoff.toString() + ' seconds');
           payload = {
             status: 'error'
           }
