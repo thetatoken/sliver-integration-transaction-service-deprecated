@@ -84,7 +84,7 @@ exports.Execute = function(callback) {
           && tx_detail.input.length == token_transfer_method_id.length + 64 + 64
           && tx_detail.input.startsWith(token_transfer_method_id + twenty_four_0s + raw_token_deposit_to_address)) { // deposit to address in config
 
-          hex_amount_str = tx_detail.input.substr(token_transfer_method_id.length + 64);
+          hex_amount_str = "0x" + tx_detail.input.substr(token_transfer_method_id.length + 64);
           decimal_amount_str = web3.toDecimal(hex_amount_str);
           deposit_amount = new web3.BigNumber(decimal_amount_str);
           milli_tokens = deposit_amount.div(Math.pow(10, 15));
