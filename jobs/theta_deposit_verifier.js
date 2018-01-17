@@ -76,7 +76,7 @@ exports.Execute = function(callback) {
           return api.UpdateThetaTransactionAsync(xact_id, JSON.stringify(payload));
         }
       } else { // tx_receipt and tx_detail are both fetched
-        raw_token_deposit_to_address = token_deposit_to_address.startsWith("0x") ? token_deposit_to_address.substr(2) : token_deposit_to_address;
+        raw_token_deposit_to_address = (token_deposit_to_address.startsWith("0x") ? token_deposit_to_address.substr(2) : token_deposit_to_address).toLowerCase();
 
         if (tx_receipt.status == '0x1' 
           && tx_detail.from.toLowerCase() == user_wallet_address.toLowerCase() // from user
