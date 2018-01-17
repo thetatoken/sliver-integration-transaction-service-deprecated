@@ -25,5 +25,6 @@ cron job format in `exe_freq` follows https://github.com/node-schedule/node-sche
 ```
 
 forever run_theta_transaction_service.js
+forever run_theta_deposit_service.js
 
 ```
