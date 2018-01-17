@@ -42,7 +42,7 @@ exports.GetSignedThetaTransactionData = function(fromId, toId, value, nonce, gas
 
 // theta deposit
 exports.GetProcessingThetaDeposit = function(callback) {
-  ProcessHttpRequest(config.private_api_host, config.private_api_port, 'GET', '/v1/theta_deposit/list?type=deposit&status=processing&number=1000', '', callback);
+  ProcessHttpRequest(config.private_api_host, config.private_api_port, 'GET', '/v1/theta_xact/list?type=deposit&status=processing&number=1000', '', callback);
 }
 
 exports.GetUserEtherWalletAddress = function(userId, callback) {

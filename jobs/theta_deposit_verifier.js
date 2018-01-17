@@ -67,6 +67,7 @@ exports.Execute = function(callback) {
           log.Info('Deposit with ' + xact_hash + ' has not receipt yet. Will retry later');
           throw null;
         } else {
+          log.Info('Failed to get transaction receipt from blockchain within ttl');
           payload = {
             status: 'error'
           }
@@ -99,6 +100,12 @@ exports.Execute = function(callback) {
       }
     } else {
       throw Error('Failed to fetch user ether wallet address from backend. ' + xact_recipient_id);
+    }
+  })
+  .then(function(updateTransactionResult) {
+    var result = JSON.parse(updateTransactionResult);
+    if (result.status != 'SUCCESS') {
+      throw Error('Failed to update transaction status to backend');
     }
   })
   .catch(function(error) {
