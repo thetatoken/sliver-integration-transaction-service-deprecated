@@ -15,6 +15,8 @@ var gas = null;
 var lock = false;
 var nonce = -1;
 var used_nonce = -1
+var from_address = null;
+var previous_from_address = null;
 var nonce_lock_default = 30;
 var nonce_lock = 0;
 
@@ -81,19 +83,19 @@ exports.Execute = function(callback) {
     // get nonce from public key, then construct signing parameters
     var result = JSON.parse(addressResult);
     if (result.status == 'OK') {
-      var from_address = result.body.address.startsWith('0x')? result.body.address : '0x' + result.body.address;
+      from_address = result.body.address.startsWith('0x')? result.body.address : '0x' + result.body.address;
       log.Info('sender address: ' + from_address);
 
       nonce = web3.eth.getTransactionCount(from_address, 'pending');
       log.Info('nonce: ' + nonce)
 
       // nonce reuse check
-      if (used_nonce == nonce && nonce_lock > 0) {
+      if (used_nonce == nonce && previous_from_address == from_address && nonce_lock > 0) {
         // eventually this lock reduces to 0 and duplicated nonce can be used again
         // this is used in when transaction is dropped from node and we should retry with same nonce
         nonce_lock -= 1; 
         log.Info('nonce_lock: ' + nonce_lock.toString())
-        throw Error('This nonce ' + used_nonce.toString() + ' was used in previous transactions. Wait for nonce to increase, or wearing out duplication lock .')
+        throw Error('This nonce ' + used_nonce.toString() + ' was used in previous transactions. Wait for nonce to increase, or wearing out duplication lock: ' + nonce_lock.toString())
       }
 
       return api.GetSignedThetaTransactionDataAsync(from_id, to_id, send_value_string, nonce, gas.gas_price, gas.start_gas, token_type)
@@ -109,12 +111,13 @@ exports.Execute = function(callback) {
       log.Info('transaction data: ' + transaction_data);
       var transactionHash = web3.eth.sendRawTransaction(transaction_data);
       if (transactionHash == null || transactionHash == undefined) {
-        throw Error('Failed to broadcast exchange rate transaction.')
+        throw Error('Failed to broadcast transaction.')
       }
       log.Info('Send success. TransactionHash: ' + transactionHash.toString());
       
       // record nonce, and reset nonce_lock
       used_nonce = nonce;
+      previous_from_address = from_address;
       nonce_lock = nonce_lock_default;
 
       payload = {
