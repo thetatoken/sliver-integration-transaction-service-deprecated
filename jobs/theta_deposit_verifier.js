@@ -11,7 +11,6 @@ var blocksNeeded = 5; // will be overwritten by config
 var lock = false;
 var timestamp_cutoff = 900; // seconds
 var token_contract_address = null;
-var token_deposit_to_address = null;
 var token_transfer_method_id = null;
 var twenty_four_0s = "000000000000000000000000";
 
@@ -24,7 +23,6 @@ exports.Initialize = function(config, web3Node, callback) {
   web3 = web3Node;
   blocksNeeded = config.blocks_to_confirm;
   token_contract_address = config.theta_token_contract_address;
-  token_deposit_to_address = config.theta_token_deposit_to_address;
   token_transfer_method_id = config.theta_token_transfer_method_id;
 }
 
@@ -77,10 +75,9 @@ exports.Execute = function(callback) {
           return api.UpdateThetaTransactionAsync(xact_id, JSON.stringify(payload));
         }
       } else { // tx_receipt and tx_detail are both fetched
-        raw_token_deposit_to_address = (token_deposit_to_address.startsWith("0x") ? token_deposit_to_address.substr(2) : token_deposit_to_address).toLowerCase();
-
+        raw_token_deposit_to_address = (user_wallet_address.startsWith("0x") ? user_wallet_address.substr(2) : user_wallet_address).toLowerCase();
+        
         if (tx_receipt.status == '0x1' 
-          && tx_detail.from.toLowerCase() == user_wallet_address.toLowerCase() // from user
           && tx_detail.to.toLowerCase() == token_contract_address.toLowerCase() // to smart contract
           && tx_detail.input.length == token_transfer_method_id.length + 64 + 64
           && tx_detail.input.startsWith(token_transfer_method_id + twenty_four_0s + raw_token_deposit_to_address)) { // deposit to address in config
