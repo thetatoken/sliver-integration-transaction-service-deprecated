@@ -75,29 +75,36 @@ exports.Execute = function(callback) {
           return api.UpdateThetaTransactionAsync(xact_id, JSON.stringify(payload));
         }
       } else { // tx_receipt and tx_detail are both fetched
-        raw_token_deposit_to_address = (user_wallet_address.startsWith("0x") ? user_wallet_address.substr(2) : user_wallet_address).toLowerCase();
-        
-        if (tx_receipt.status == '0x1' 
-          && tx_detail.to.toLowerCase() == token_contract_address.toLowerCase() // to smart contract
-          && tx_detail.input.length == token_transfer_method_id.length + 64 + 64
-          && tx_detail.input.startsWith(token_transfer_method_id + twenty_four_0s + raw_token_deposit_to_address)) { // deposit to address in config
+        var raw_token_deposit_to_address = (user_wallet_address.startsWith("0x") ? user_wallet_address.substr(2) : user_wallet_address).toLowerCase();
+        var currentBlock = web3.eth.blockNumber;
+        var receiptBlock = tx_receipt.blockNumber;
+        log.Info((currentBlock - receiptBlock + 1).toString() + ' blocks has confirmed this transaction.')
 
-          hex_amount_str = "0x" + tx_detail.input.substr(token_transfer_method_id.length + 64);
-          decimal_amount_str = web3.toDecimal(hex_amount_str);
-          deposit_amount = new web3.BigNumber(decimal_amount_str);
-          milli_tokens = Math.floor(deposit_amount.div(Math.pow(10, 15))); // floor to int
+        if (currentBlock - receiptBlock + 1 >=  blocksNeeded) {
+          if (tx_receipt.status == '0x1' 
+            && tx_detail.to.toLowerCase() == token_contract_address.toLowerCase() // to smart contract
+            && tx_detail.input.length == token_transfer_method_id.length + 64 + 64
+            && tx_detail.input.startsWith(token_transfer_method_id + twenty_four_0s + raw_token_deposit_to_address)) { // deposit to address in config
+
+            hex_amount_str = "0x" + tx_detail.input.substr(token_transfer_method_id.length + 64);
+            decimal_amount_str = web3.toDecimal(hex_amount_str);
+            deposit_amount = new web3.BigNumber(decimal_amount_str);
+            milli_tokens = Math.floor(deposit_amount.div(Math.pow(10, 15))); // floor to int
+              payload = {
+                status: 'success',
+                tokens: milli_tokens
+              }
+              log.Info('Verified user deposit. Milli Theta Amount: ' + milli_tokens.toString())
+          } else {
+            log.Info('User deposit data has failed validity check. ')
             payload = {
-              status: 'success',
-              tokens: milli_tokens
+              status: 'error'
             }
-            log.Info('Verified user deposit. Milli Theta Amount: ' + milli_tokens.toString())
-        } else {
-          log.Info('User deposit data has failed validity check. ')
-          payload = {
-            status: 'error'
           }
-        }
-        return api.UpdateThetaTransactionAsync(xact_id, JSON.stringify(payload)); 
+          return api.UpdateThetaTransactionAsync(xact_id, JSON.stringify(payload)); 
+        } else {
+          throw null;
+        } 
       }
     } else {
       throw Error('Failed to fetch user ether wallet address from backend. ' + xact_recipient_id);
