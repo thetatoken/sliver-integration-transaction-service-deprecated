@@ -5,7 +5,7 @@ var fs = require('fs');
 var theta_transaction_broadcaster = require('./jobs/theta_transaction_broadcaster.js');
 var theta_transaction_verifier = require('./jobs/theta_transaction_verifier.js');
 var api = require('./api/api.js');
-var theta_xacts_preparer = require('../utils/theta_xacts_preparer');
+var theta_xacts_preparer = require('./utils/theta_xacts_preparer');
 var logger = require('./utils/logger.js');
 
 //------------------------------------------------------------------------------
