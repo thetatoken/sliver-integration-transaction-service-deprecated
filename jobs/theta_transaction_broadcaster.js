@@ -1,5 +1,6 @@
 var api = require('../api/api.js');
-var logger = require('../utils/logger.js')
+var logger = require('../utils/logger.js');
+var theta_xacts_preparer = require('../utils/theta_xacts_preparer');
 
 
 //------------------------------------------------------------------------------
@@ -39,7 +40,7 @@ exports.Execute = function(callback) {
   lock = true;
   var lockOwner = true; 
 
-  api.GetNewThetaTransactionAsync()
+  theta_xacts_preparer.GetNewThetaTransactionAsync()
   .then(function (transactionResult) {
     var result = JSON.parse(transactionResult);
     if (result.status == 'SUCCESS') {
@@ -76,7 +77,7 @@ exports.Execute = function(callback) {
         throw null;
       }
     } else {
-      throw Error('Failed to fetch new transaction from backend.');
+      throw Error('Failed to fetch new transaction from backend: ' + result.message);
     }
   })
   .then(function (addressResult) {

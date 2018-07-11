@@ -19,6 +19,14 @@ exports.GetNewThetaTransaction = function(callback) {
   ProcessHttpRequest(config.private_api_host, config.private_api_port, 'GET', '/v1/theta_xact/list?type=gift&type=withdraw&type=gas&status=created&number=1000', '', callback);
 }
 
+exports.GetPaginatedThetaTransaction = function(anchor, callback) {
+  params = '/v1/theta_xact/list?type=gift&type=withdraw&type=gas&status=created&number=100';
+  if (anchor) {
+    params += '&anchor=' + anchor;
+  }
+  ProcessHttpRequest(config.private_api_host, config.private_api_port, 'GET', params, '', callback);
+}
+
 exports.GetProcessingThetaTransaction = function(callback) {
   ProcessHttpRequest(config.private_api_host, config.private_api_port, 'GET', '/v1/theta_xact/list?status=processing', '', callback);
 }

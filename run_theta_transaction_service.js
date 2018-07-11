@@ -1,11 +1,12 @@
-var schedule = require('node-schedule')
+var schedule = require('node-schedule');
 var Web3 = require('web3');
 var bluebird = require("bluebird");
-var fs = require('fs')
-var theta_transaction_broadcaster = require('./jobs/theta_transaction_broadcaster.js')
-var theta_transaction_verifier = require('./jobs/theta_transaction_verifier.js')
-var api = require('./api/api.js')
-var logger = require('./utils/logger.js')
+var fs = require('fs');
+var theta_transaction_broadcaster = require('./jobs/theta_transaction_broadcaster.js');
+var theta_transaction_verifier = require('./jobs/theta_transaction_verifier.js');
+var api = require('./api/api.js');
+var theta_xacts_preparer = require('../utils/theta_xacts_preparer');
+var logger = require('./utils/logger.js');
 
 //------------------------------------------------------------------------------
 //  Global variables
@@ -35,6 +36,7 @@ function main() {
 
   api.SetConfig(config);
   bluebird.promisifyAll(api);
+  bluebird.promisifyAll(theta_xacts_preparer);
 
   var web3PrimaryNode = new Web3(new Web3.providers.HttpProvider(config.web3_primary_node));
   var web3SecondaryNode = new Web3(new Web3.providers.HttpProvider(config.web3_secondary_node));
