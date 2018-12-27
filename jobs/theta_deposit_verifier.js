@@ -88,7 +88,7 @@ exports.Execute = function(callback) {
 
             hex_amount_str = "0x" + tx_detail.input.substr(token_transfer_method_id.length + 64);
             decimal_amount_str = web3.toDecimal(hex_amount_str);
-            deposit_amount = new web3.BigNumber(decimal_amount_str);
+            deposit_amount = new web3.BigNumber(decimal_amount_str.toString());
             milli_tokens = Math.floor(deposit_amount.div(Math.pow(10, 15))); // floor to int
               payload = {
                 status: 'success',
