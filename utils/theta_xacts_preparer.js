@@ -29,16 +29,24 @@ function getAllThetaXacts(allXacts, anchor, cb){
             return;
         }
 
-        console.log('Adding ' + result.body.length + ' more xacts to list. First: ' + result.body[0].id + ' last: ' + result.body[result.body.length - 1].id);
-        for (var i = 0; i < result.body.length; i++){
-            allXacts.push(result.body[i]);
-        }
+        try {
+            if (result.body.length > 0) {
+                console.log('Adding ' + result.body.length + ' more xacts to list. First: ' + result.body[0].id + ' last: ' + result.body[result.body.length - 1].id);
+                for (var i = 0; i < result.body.length; i++){
+                    allXacts.push(result.body[i]);
+                }
+            }
 
-        if (result.body.length == 100){
-            setTimeout(function () {
-                getAllThetaXacts(allXacts, result.body[99].id, cb);
-            }, 100);
-        } else {
+            if (result.body.length == 100){
+                setTimeout(function () {
+                    getAllThetaXacts(allXacts, result.body[99].id, cb);
+                }, 100);
+            } else {
+                cb();
+            }
+        } catch (e) {
+            console.log('An error occurred: ' + e.message);
+            console.log('Transaction result: ' + transactionResult);
             cb();
         }
     });
