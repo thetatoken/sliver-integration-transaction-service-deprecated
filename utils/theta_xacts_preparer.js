@@ -84,7 +84,7 @@ function prepareThetaXacts(allXacts) {
     console.log(JSON.stringify(sortedBatches));
 
     if (sortedBatches.length > 0) {
-        if (sortedBatches[0][1].tokens > 100000) { // restrict it to only process xacts if receiver is receiving more than 100 theta
+        if (sortedBatches[0][1].tokens >= 10000) { // restrict it to only process xacts if receiver is receiving 10 theta or more
             return batches[sortedBatches[0][0]];
         }
     }
